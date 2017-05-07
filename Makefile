@@ -1,4 +1,4 @@
-all: Main.cpp RayTracer.hpp ImageWriter.hpp Exceptions.hpp
-	g++ -o tracer Main.cpp
+all: src/Main.cpp include/RayTracer.hpp include/ImageWriter.hpp include/Exceptions.hpp
+	g++ -o bin/tracer src/Main.cpp
 clean:
-	rm -f tracer out.bmp
+	rm -f bin/tracer bin/out.bmp

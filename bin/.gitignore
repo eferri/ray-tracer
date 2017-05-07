@@ -1,0 +1,3 @@
+#Make sure git tracks empty bin directory
+*
+!.gitignore

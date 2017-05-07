@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "ImageWriter.hpp"
-#include "Exceptions.hpp"
-#include "RayTracer.hpp"
+#include "../include/ImageWriter.hpp"
+#include "../include/Exceptions.hpp"
+#include "../include/RayTracer.hpp"
 
 int main() {
     ImageWriter::ImageWriter h(250,250);

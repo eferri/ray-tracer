@@ -85,7 +85,7 @@ public:
         infoHeader[11] = (unsigned char) (height>>24);
         
         std::ofstream outFile;
-        outFile.open("out.bmp", std::ios::out | std::ios::binary);
+        outFile.open("bin/out.bmp", std::ios::out | std::ios::binary);
         if (!outFile.is_open()) {
             throw CannotOpenFileException();
         }
