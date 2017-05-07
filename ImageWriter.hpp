@@ -26,6 +26,9 @@ class ImageWriter {
 public:
    // Creates a blank image, with all pixels set to black (RGB value 0,0,0)
    // by default.
+    int width;
+    int height;
+
     ImageWriter(int imageWidth, int imageHeight)
         : image(imageWidth * imageHeight, Pixel())
     {
@@ -34,7 +37,7 @@ public:
     }
 
     void writePixel(int x, int y, Pixel &pix) {
-        image.at(height * y + x) = pix;
+        image.at(width * y + x) = pix;
     }
 
     // Writes the raster image information stored in imageWriter to a bitmap (bmp) file.
@@ -46,29 +49,40 @@ public:
         // The rest of the bytes in the infoHeader default to 0 for uncompressed images.
         unsigned char infoHeader[40] = {40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0, 24,0};
         unsigned char pix[3] = {0,0,0};
-        unsigned char pad[2] = {0,0};
 
-        // Fill in file size. Because of padding, every two 3-byte pixels takes 4-bytes of storage.
+        int rowSize = 3 * width;
+        int remain = rowSize % 4;
+        int padLen;
+        if (remain != 0) {
+            padLen = 4 - remain;
+        } else {
+            padLen = 0;
+        }
 
+        // Fill in file size.
         int imageSize = image.size();
-        std::cout << imageSize << std::endl;            
-
-        int fileSize = 14 + 40 + imageSize + imageSize / 2;
-        fileHeader[2] = (unsigned char) fileSize;
-        fileHeader[3] = (unsigned char) fileSize>>8;
-        fileHeader[4] = (unsigned char) fileSize>>16;
-        fileHeader[5] = (unsigned char) fileSize>>24;                                        
+        int fileSize = 14 + 40 + imageSize + padLen*height;
         
+        unsigned char pad[padLen];
+        for (int i = 0; i < padLen; i++) {
+            pad[i] = 0;
+        }
+
+        fileHeader[2] = (unsigned char) fileSize;
+        fileHeader[3] = (unsigned char) (fileSize>>8);
+        fileHeader[4] = (unsigned char) (fileSize>>16);
+        fileHeader[5] = (unsigned char) (fileSize>>24);                                              
+
         // Fill in dimensions of image
         infoHeader[4] = (unsigned char) width;
-        infoHeader[5] = (unsigned char) width>>8;
-        infoHeader[6] = (unsigned char) width>>16;
-        infoHeader[7] = (unsigned char) width>>24;
+        infoHeader[5] = (unsigned char) (width>>8);
+        infoHeader[6] = (unsigned char) (width>>16);
+        infoHeader[7] = (unsigned char) (width>>24);
         
         infoHeader[8] = (unsigned char) height;
-        infoHeader[9] = (unsigned char) height>>8;
-        infoHeader[10] = (unsigned char) height>>16;
-        infoHeader[11] = (unsigned char) height>>24;
+        infoHeader[9] = (unsigned char) (height>>8);
+        infoHeader[10] = (unsigned char) (height>>16);
+        infoHeader[11] = (unsigned char) (height>>24);
         
         std::ofstream outFile;
         outFile.open("out.bmp", std::ios::out | std::ios::binary);
@@ -77,27 +91,25 @@ public:
         }
         outFile.write((const char *) fileHeader, 14);
         outFile.write((const char *) infoHeader, 40);        
-        
-        for (int i = 0; i < imageSize; i++) {
-            Pixel temp = image.at(i);
-            pix[0] = temp.B;
-            pix[1] = temp.G;
-            pix[2] = temp.R;
-            
-            outFile.write((const char *) pix, 3);
 
-            if (i % 2 == 1) {
-                outFile.write((const char *) pad, 2);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                Pixel temp = image.at(width*i + j);
+                pix[0] = temp.B;
+                pix[1] = temp.G;
+                pix[2] = temp.R;
+                
+                outFile.write((const char *) pix, 3);
             }
-                        
+            if (padLen > 0) {
+                outFile.write((const char *) pad, padLen);
+            }
         }
         outFile.close();
     }
 
 private:
     std::vector<Pixel> image;
-    int width;
-    int height;
 };
 
 } // nameSpace ImageWriter
