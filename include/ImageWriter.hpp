@@ -1,10 +1,13 @@
+#ifndef IMAGE_WRITER_HPP
+#define IMAGE_WRITER_HPP
+
 #include <iostream>
 #include <fstream>
 #include <vector>
 
 #include "Exceptions.hpp"
 
-namespace ImageWriter {
+namespace tracer {
 
 class Pixel {
 public:
@@ -26,14 +29,20 @@ class ImageWriter {
 public:
    // Creates a blank image, with all pixels set to black (RGB value 0,0,0)
    // by default.
-    int width;
-    int height;
 
     ImageWriter(int imageWidth, int imageHeight)
         : image(imageWidth * imageHeight, Pixel())
     {
         width = imageWidth;
         height = imageHeight;        
+    }
+
+    int imgWidth() {
+        return width;
+    }
+
+    int imgHeight() {
+        return height;
     }
 
     void writePixel(int x, int y, Pixel &pix) {
@@ -110,6 +119,10 @@ public:
 
 private:
     std::vector<Pixel> image;
+    int width;
+    int height;
 };
 
 } // nameSpace ImageWriter
+
+#endif
