@@ -2,9 +2,9 @@
 #include <glm/vec3.hpp>
 
 #include "../include/ImageWriter.hpp"
-#include "../include/Exceptions.hpp"
 #include "../include/Ray.hpp"
 #include "../include/Shapes.hpp"
+#include "../include/Surface.hpp"
 #include "../include/Geometry.hpp"
 
 
@@ -12,9 +12,9 @@ using namespace tracer;
 
 glm::dvec3 shade(const Ray & ray, const Sphere & sphere, const Plane & plane) {
     
-    
-    doubleOption sphereIntersect = sphere.intersect(ray);
-    doubleOption planeIntersect = plane.intersect(ray);
+
+    doubleOption sphereIntersect = sphere.hit(ray);
+    doubleOption planeIntersect = plane.hit(ray);
 
     if ((!planeIntersect.opt && !sphereIntersect.opt) || (planeIntersect.val < 0.0 && !sphereIntersect.opt)) {
         return glm::dvec3(0.2,0.2,0.2);
@@ -43,7 +43,7 @@ int main() {
     
     // Origin is the camera position
     glm::dvec3 origin(0.0,0.0,0.0);
-    glm::dvec3 light(2.0,5.0,0.0)
+    glm::dvec3 light(2.0,5.0,0.0);
     // colour vector used for shading
     glm::dvec3 colour(0.0,0.0,0.0);
     Sphere sphere(glm::dvec3(0.0,0.0,-1.0), 0.5);

@@ -1,18 +1,21 @@
-#ifndef SPHERE_HPP
-#define SPHERE_HPP
+#ifndef SHAPES_HPP
+#define SHAPES_HPP
 
 #include <iostream>
 #include <glm/vec3.hpp>
 #include <glm/geometric.hpp>
+#include <glm/common.hpp>
 #include <cmath>
 
 #include "Geometry.hpp"
-#include "Exceptions.hpp"
+#include "Surface.hpp"
+#include "Ray.hpp"
+#include "Constants.hpp"
 
 namespace tracer{
 
 // Represents a sphere.
-class Sphere : public Shape {
+class Sphere : public Surface {
 public:
     Sphere(const glm::dvec3 & origin, const double radius) {
         o = origin;
@@ -28,7 +31,7 @@ public:
         return r;
     }
 
-    doubleOption intersect(const Ray & ray) const {
+    doubleOption hit(const Ray & ray) const {
         double A = glm::dot(ray.direction(), ray.direction());
         glm::dvec3 dist = ray.origin() - o;
         double B = 2.0 * glm::dot(ray.direction(),dist);
@@ -42,15 +45,21 @@ public:
         }
 
         double root = std::sqrt(disc);
-        double t1 = (-B + root) / (2*A);
-        double t2 = (-B - root) / (2*A);
-        
-        if (isEqual(t1,t2)) {
-            return doubleOption(t1);
-        } else if (glm::distance(ray.pointAt(t1), ray.origin()) < glm::distance(ray.pointAt(t2), ray.origin())) {
-            return doubleOption(t1);
+        double h1 = (-B + root) / (2*A);
+        double h2 = (-B - root) / (2*A);        
+
+        bool resulT_1 = (h1 > T_0 && h1 < T_1);
+        bool result2 = (h2 > T_0 && h2 < T_1);
+
+        if (resulT_1 && result2) {
+            h1 = glm::min(h1,h2);
+            return doubleOption(h1);
+        } else if (resulT_1) {
+            return doubleOption(h1);
+        } else if (result2) {
+            return doubleOption(h2);
         } else {
-            return doubleOption(t2);
+            return doubleOption();
         }
     }
 
@@ -59,7 +68,7 @@ private:
     double r;    
 };
 
-class Plane: public Shape {
+class Plane: public Surface {
 public:
     Plane(const glm::dvec3 & normal, const glm::dvec3 & point) {
         n = normal;
@@ -75,12 +84,18 @@ public:
         return p;
     }
 
-    doubleOption intersect(const Ray & ray) const {
+    doubleOption hit(const Ray & ray) const {
         double denominator = dot(ray.direction(),n);
         double numerator = dot(p - ray.origin(),n);
         // Check possible intersection cases
         if (!isEqual(denominator, 0.0)) {
-            return doubleOption(numerator / denominator);
+            double result = (numerator / denominator);
+            // Check to make sure result is in the valid intersect range
+            if (result > T_0 && result < T_1) {
+                return doubleOption(result);
+            } else {
+                return doubleOption();
+            }            
         } else if (isEqual(numerator, 0.0)) {
             // Line is in plane. return dummy t value
             return doubleOption(1.0);;

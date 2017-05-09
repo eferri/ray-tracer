@@ -1,9 +1,9 @@
-#ifndef CONSTANTS_HPP
-#define CONSTANTS_HPP
+#ifndef GEOMETRY_HPP
+#define GEOMETRY_HPP
 
-#define EPSILON 0.0001
+#include "Constants.hpp"
 
-#include <cmath>
+//This file defines various mathmatical functions not related to any class.
 
 namespace tracer{
 
@@ -20,28 +20,6 @@ bool isGreaterThan(double & a, double b) {
 bool isLessThan(double & a, double b) {
     return (std::abs(a - b) > EPSILON) && (a < b);    
 }
-
-// Used to indicate if there was an intersection.
-// If there was, opt is set to true and val contains the parametric
-// point of intersection. If there was not, opt is false and val
-// is undefined (0.0 by default).
-class doubleOption {
-public:
-    double val;
-    bool opt;
-
-    doubleOption() {
-        val = 0.0;
-        opt = false;
-    }
-    
-    doubleOption(double value) {
-        val = value;
-        opt = true;
-    }
-};
-
-class Shape {};
 
 }
 

@@ -17,7 +17,6 @@ public:
         return o;
     }
 
-
     glm::dvec3 direction() const {
         return d;
     }
