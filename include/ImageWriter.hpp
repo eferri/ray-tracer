@@ -5,8 +5,6 @@
 #include <fstream>
 #include <vector>
 
-#include "Exceptions.hpp"
-
 namespace tracer {
 
 class Pixel {
@@ -94,10 +92,8 @@ public:
         infoHeader[11] = (unsigned char) (height>>24);
         
         std::ofstream outFile;
+        outFile.exceptions(std::ofstream::failbit | std::ofstream::badbit);
         outFile.open("bin/out.bmp", std::ios::out | std::ios::binary);
-        if (!outFile.is_open()) {
-            throw CannotOpenFileException();
-        }
         outFile.write((const char *) fileHeader, 14);
         outFile.write((const char *) infoHeader, 40);        
 
