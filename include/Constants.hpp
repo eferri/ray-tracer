@@ -3,14 +3,17 @@
 
 #define EPSILON 0.0001
 
-#define T_0 0.005
-#define T_1 100.0
+#define IMAGE_WIDTH 2000
+#define IMAGE_HEIGHT 1000
+
+#define T_0 0.00000001
+#define T_1 1000.0
 #define NUM_SURFACES 2
-#define BACKGROUND_COLOUR glm::dvec3(0.1,0.1,0.1)
+#define BACKGROUND_COLOUR 0.1,0.1,0.1
 
 #define AMBIENT_INTENSITY 0.3,0.3,0.3
-#define LIGHT_INTENSITY glm::dvec3(0.8,0.8,0.8)
-#define LIGHT_SOURCE 5.0,8.0,4.0
+#define LIGHT_INTENSITY 0.8,0.8,0.8
+#define LIGHT_SOURCE 5.0,3.0,4.0
 
 // For Sphere
 #define SPECULAR_SPHERE glm::dvec3(0.5,0.1,0.0)

@@ -56,7 +56,7 @@ glm::dvec3 shadeObject(Ray & ray, HitRecord hit,
         // only light is ambient. 
         
         if (!lightHit.opt) {
-            light = light + LIGHT_INTENSITY * obj->colour() * 
+            light = light + glm::dvec3(LIGHT_INTENSITY) * obj->colour() * 
                 glm::max(0.0, glm::dot(obj->normal(point), glm::normalize(lightRay.direction())));
         }
         return light;
@@ -66,7 +66,7 @@ glm::dvec3 shadeObject(Ray & ray, HitRecord hit,
 glm::dvec3 Render(Ray & ray, Surface **objList, int numObjs) {
     HitRecord hit = QueryScene(ray,objList,numObjs);
     if (!hit.opt) {
-        return BACKGROUND_COLOUR;
+        return glm::dvec3(BACKGROUND_COLOUR);
     } else {
         return shadeObject(ray, hit, objList, numObjs);
     }
@@ -74,7 +74,7 @@ glm::dvec3 Render(Ray & ray, Surface **objList, int numObjs) {
 
 
 int main() {
-    ImageWriter image(2000,1000);
+    ImageWriter image(IMAGE_WIDTH,IMAGE_HEIGHT);
     // orthonormal basis U,V,W of camera-screen system
     glm::dvec3 u(1.0,0.0,0.0);
     glm::dvec3 v(0.0,1.0,0.0);
@@ -106,7 +106,7 @@ int main() {
     for(int j = 0; j < image.imgHeight(); j++) {
         for (int i = 0; i < image.imgWidth(); i++) {
             
-            for (int k = 0; k < 10; k++) {
+            for (int k = 0; k < 5; k++) {
                 double x = l + screenWidth*(double(i) + 2 * randDouble() * 0.5) / double (image.imgWidth());
                 double y = b + screenHeight*(double(j) + 2 * randDouble() * 0.5) / double (image.imgHeight());
 
@@ -114,7 +114,7 @@ int main() {
                 colour = colour + Render(ray, objList, NUM_SURFACES);
             }
 
-            colour = colour / 10.0;
+            colour = colour / 5.0;
 
             unsigned char r = (unsigned char) 255.9999 * colour.x;
             unsigned char g = (unsigned char) 255.9999 * colour.y;
