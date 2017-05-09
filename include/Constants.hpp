@@ -14,13 +14,13 @@
 
 // For Sphere
 #define SPECULAR_SPHERE glm::dvec3(0.5,0.1,0.0)
-#define COLOUR_SPHERE glm::dvec3(0.5,0.1,0.0)
+#define COLOUR_SPHERE glm::dvec3(0.5,0.5,0.0)
 #define ORIGIN_SPHERE glm::dvec3(0.0,0.0,-2.0)
 #define RADIUS_SPHERE -0.5
 
 // For Plane
 #define SPECULAR_PLANE glm::dvec3(0.0,0.1,0.5)
-#define COLOUR_PLANE glm::dvec3(0.0,0.1,0.5)
+#define COLOUR_PLANE glm::dvec3(0.3,0.2,0.5)
 #define NORMAL_PLANE glm::dvec3(0.0,1.0,0.0)
 #define POINT_PLANE glm::dvec3(0.0,-0.8,0.0)
 

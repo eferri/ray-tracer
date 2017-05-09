@@ -105,11 +105,16 @@ int main() {
 
     for(int j = 0; j < image.imgHeight(); j++) {
         for (int i = 0; i < image.imgWidth(); i++) {
-            double x = l + screenWidth*(double(i) + 0.5) / double (image.imgWidth());
-            double y = b + screenHeight*(double(j) + 0.5) / double (image.imgHeight());
+            
+            for (int k = 0; k < 10; k++) {
+                double x = l + screenWidth*(double(i) + 2 * randDouble() * 0.5) / double (image.imgWidth());
+                double y = b + screenHeight*(double(j) + 2 * randDouble() * 0.5) / double (image.imgHeight());
 
-            Ray ray(origin, -screenDepth*w + x*u + y*v);
-            colour = Render(ray, objList, NUM_SURFACES);
+                Ray ray(origin, -screenDepth*w + x*u + y*v);
+                colour = colour + Render(ray, objList, NUM_SURFACES);
+            }
+
+            colour = colour / 10.0;
 
             unsigned char r = (unsigned char) 255.9999 * colour.x;
             unsigned char g = (unsigned char) 255.9999 * colour.y;

@@ -21,6 +21,10 @@ bool isLessThan(double & a, double b) {
     return (std::abs(a - b) > EPSILON) && (a < b);    
 }
 
+double randDouble() {
+    return double(rand()) / RAND_MAX;
+}
+
 }
 
 #endif
