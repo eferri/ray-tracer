@@ -18,12 +18,10 @@ namespace tracer{
 class Sphere : public Surface {
 public:
     Sphere(const glm::dvec3 & origin, const double radius,
-           const double diffuse, const double specular, 
-           const glm::dvec3 & colour) {
+           const glm::dvec3 specular, const glm::dvec3 & colour) {
         
         o = origin;
         r = radius;
-        diffuseConst = diffuse;
         specularConst = specular;
         colourConst = colour;
     }
@@ -41,7 +39,7 @@ public:
         return glm::normalize(point - o);
     }
 
-    doubleOption hit(Ray & ray)  {
+    HitRecord hit(Ray & ray)  {
         double A = glm::dot(ray.direction(), ray.direction());
         glm::dvec3 dist = ray.origin() - o;
         double B = 2.0 * glm::dot(ray.direction(),dist);
@@ -51,25 +49,25 @@ public:
         
         // Directly compare here to avoid taking the square root of a negative.
         if (disc < 0.0) {
-            return doubleOption();
+            return HitRecord();
         }
 
         double root = std::sqrt(disc);
         double h1 = (-B + root) / (2*A);
         double h2 = (-B - root) / (2*A);        
 
-        bool resulT_1 = (h1 > T_0 && h1 < T_1);
+        bool result1 = (h1 > T_0 && h1 < T_1);
         bool result2 = (h2 > T_0 && h2 < T_1);
 
-        if (resulT_1 && result2) {
+        if (result1 && result2) {
             h1 = glm::min(h1,h2);
-            return doubleOption(h1);
-        } else if (resulT_1) {
-            return doubleOption(h1);
+            return HitRecord(h1);
+        } else if (result1) {
+            return HitRecord(h1);
         } else if (result2) {
-            return doubleOption(h2);
+            return HitRecord(h2);
         } else {
-            return doubleOption();
+            return HitRecord();
         }
     }
 
@@ -78,15 +76,14 @@ private:
     double r;
 };
 
+// Represents a plane
 class Plane: public Surface {
 public:
     Plane(const glm::dvec3 & normal, const glm::dvec3 & point,
-          const double diffuse, const double specular,
-          const glm::dvec3 & colour ) {
+          const glm::dvec3 specular, const glm::dvec3 & colour ) {
         
         n = glm::normalize(normal);
         p = point;
-        diffuseConst = diffuse;
         specularConst = specular;
         colourConst = colour;
     }
@@ -100,7 +97,7 @@ public:
         return p;
     }
 
-    doubleOption hit( Ray & ray) {
+    HitRecord hit( Ray & ray) {
         double denominator = dot(ray.direction(),n);
         double numerator = dot(p - ray.origin(),n);
         // Check possible intersection cases
@@ -108,15 +105,15 @@ public:
             double result = (numerator / denominator);
             // Check to make sure result is in the valid intersect range
             if (result > T_0 && result < T_1) {
-                return doubleOption(result);
+                return HitRecord(result);
             } else {
-                return doubleOption();
+                return HitRecord();
             }            
         } else if (isEqual(numerator, 0.0)) {
             // Line is in plane. return dummy t value
-            return doubleOption(1.0);;
+            return HitRecord(1.0);;
         } else {
-            return doubleOption();            
+            return HitRecord();            
         }
     }
 private:

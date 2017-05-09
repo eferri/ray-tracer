@@ -13,15 +13,15 @@ public:
         d = direction;
     }
 
-    glm::dvec3 origin() const {
+    glm::dvec3 origin() {
         return o;
     }
 
-    glm::dvec3 direction() const {
+    glm::dvec3 direction() {
         return d;
     }
 
-    glm::dvec3 pointAt(double t) const {
+    glm::dvec3 pointAt(double t) {
         return o + t*d;
     }
 private:

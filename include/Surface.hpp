@@ -3,27 +3,31 @@
 
 #include <cmath>
 #include "Constants.hpp"
-
+#include "Ray.hpp"
 
 namespace tracer{
 
 // Used to indicate if there was an intersection.
 // If there was, opt is set to true and val contains the parametric
 // point of intersection. If there was not, opt is false and val
-// is undefined (0.0 by default).
-class doubleOption {
+// is undefined (0.0 by default). obj contains the index of the object
+// of intersection, if it exists. obj must be set manually. 
+class HitRecord {
 public:
     double val;
     bool opt;
+    int obj;
 
-    doubleOption() {
+    HitRecord() {
         val = 0.0;
         opt = false;
+        obj = 0;
     }
     
-    doubleOption(double value) {
+    HitRecord(double value) {
         val = value;
         opt = true;
+        obj = 0;
     }
 };
 
@@ -31,20 +35,15 @@ public:
 // Each surface instance also has a shade method, which uses the given material properties.
 class Surface {
 protected:
-    double diffuseConst;
-    double specularConst;
+    glm::dvec3 specularConst;
     glm::dvec3 colourConst;
 public:
-    double diffuse() {return this->diffuseConst;}
-    double specular() {return this->specularConst;}
+    
+    glm::dvec3 specular() {return this->specularConst;}
     glm::dvec3 colour() {return this->colourConst;}
-    virtual doubleOption hit(Ray & ray) = 0;
+    virtual HitRecord hit(Ray & ray) = 0;
     // Returns the normalized normal
     virtual glm::dvec3 normal(glm::dvec3 & point) = 0;
-
-    glm::dvec3 shadeObject(Ray & ray) {
-        
-    }
 };
 
 }

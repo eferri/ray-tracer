@@ -6,27 +6,75 @@
 #include "../include/Shapes.hpp"
 #include "../include/Surface.hpp"
 #include "../include/Geometry.hpp"
-
+#include "../include/Constants.hpp"
 
 using namespace tracer;
 
-glm::dvec3 shade(const Ray & ray, const Sphere & sphere, const Plane & plane) {
+// Returns the a double option with the closest point of intersection.
+// HitRecord.opt is false if no hit occured.
+HitRecord QueryScene(Ray & ray, Surface **objList, int numObjs) {
     
+    // Initialization is arbitrary since we will use the bool
+    // from the HitRecord to indicate if we have had a hit or not
+    HitRecord hitRec;
+    double closestVal = T_1;
+    bool hit = false;
+    int obj = 0;
 
-    doubleOption sphereIntersect = sphere.hit(ray);
-    doubleOption planeIntersect = plane.hit(ray);
+    for (int i = 0; i < numObjs; i++) {
+        hitRec = objList[i]->hit(ray);
+        if (hitRec.opt && (hitRec.val < closestVal)) {
+            hit = true;
+            closestVal = hitRec.val;
+            obj = i;
+        }
+    }
 
-    if ((!planeIntersect.opt && !sphereIntersect.opt) || (planeIntersect.val < 0.0 && !sphereIntersect.opt)) {
-        return glm::dvec3(0.2,0.2,0.2);
-    } else if (sphereIntersect.opt) {
-        return glm::dvec3(1.0,0.5,0.0);
+    if (hit) {
+        HitRecord result(closestVal);
+        result.obj = obj;
+        return result;
     } else {
-        return glm::dvec3(0.0,1.0,0.5);        
+        return HitRecord();
     }
 }
 
+glm::dvec3 shadeObject(Ray & ray, HitRecord hit, 
+                       Surface ** objList, int numObjs) {
+        
+        Surface * obj = objList[hit.obj];
+        glm::dvec3 light(AMBIENT_INTENSITY);
+        light = light*obj->colour(); 
+        
+        glm::dvec3 point = ray.pointAt(hit.val);
+        
+        Ray lightRay(point, glm::dvec3(LIGHT_SOURCE) - point);
+        
+        // Send shadow feeler
+        HitRecord lightHit = QueryScene(lightRay, objList, numObjs);
+        // If we don't intersect anything, not in the shadow. Otherwise,
+        // only light is ambient. 
+        
+        if (!lightHit.opt) {
+            light = light + LIGHT_INTENSITY * obj->colour() * 
+                glm::max(0.0, glm::dot(obj->normal(point), glm::normalize(lightRay.direction())));
+        }
+        return light;
+}
+
+// The render method finds the closest object and calls it's shade method.
+glm::dvec3 Render(Ray & ray, Surface **objList, int numObjs) {
+    HitRecord hit = QueryScene(ray,objList,numObjs);
+    if (!hit.opt) {
+        return BACKGROUND_COLOUR;
+    } else {
+        return shadeObject(ray, hit, objList, numObjs);
+    }
+}
+
+
 int main() {
-    ImageWriter image(1000,500);
+    ImageWriter image(2000,1000);
     // orthonormal basis U,V,W of camera-screen system
     glm::dvec3 u(1.0,0.0,0.0);
     glm::dvec3 v(0.0,1.0,0.0);
@@ -46,8 +94,14 @@ int main() {
     glm::dvec3 light(2.0,5.0,0.0);
     // colour vector used for shading
     glm::dvec3 colour(0.0,0.0,0.0);
-    Sphere sphere(glm::dvec3(0.0,0.0,-1.0), 0.5);
-    Plane plane(v, -5.0*v);
+    
+    Surface **objList = new Surface *[NUM_SURFACES];
+    
+    Sphere sphere(ORIGIN_SPHERE, RADIUS_SPHERE, SPECULAR_SPHERE, COLOUR_SPHERE);
+    Plane plane(NORMAL_PLANE, POINT_PLANE, SPECULAR_PLANE, COLOUR_PLANE);
+    
+    objList[0] = &sphere;
+    objList[1] = &plane;    
 
     for(int j = 0; j < image.imgHeight(); j++) {
         for (int i = 0; i < image.imgWidth(); i++) {
@@ -55,7 +109,8 @@ int main() {
             double y = b + screenHeight*(double(j) + 0.5) / double (image.imgHeight());
 
             Ray ray(origin, -screenDepth*w + x*u + y*v);
-            colour = shade(ray, sphere, plane);
+            colour = Render(ray, objList, NUM_SURFACES);
+
             unsigned char r = (unsigned char) 255.9999 * colour.x;
             unsigned char g = (unsigned char) 255.9999 * colour.y;
             unsigned char b = (unsigned char) 255.9999 * colour.z;
