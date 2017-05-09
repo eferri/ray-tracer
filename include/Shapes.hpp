@@ -17,21 +17,31 @@ namespace tracer{
 // Represents a sphere.
 class Sphere : public Surface {
 public:
-    Sphere(const glm::dvec3 & origin, const double radius) {
+    Sphere(const glm::dvec3 & origin, const double radius,
+           const double diffuse, const double specular, 
+           const glm::dvec3 & colour) {
+        
         o = origin;
         r = radius;
+        diffuseConst = diffuse;
+        specularConst = specular;
+        colourConst = colour;
     }
 
-    glm::dvec3 origin() const {
+    glm::dvec3 origin() {
         return o;
     }
 
 
-    double radius() const {
+    double radius() {
         return r;
     }
 
-    doubleOption hit(const Ray & ray) const {
+    glm::dvec3 normal() {
+        return glm::dvec3(0.0,0.0,0.0);
+    }
+
+    doubleOption hit(Ray & ray)  {
         double A = glm::dot(ray.direction(), ray.direction());
         glm::dvec3 dist = ray.origin() - o;
         double B = 2.0 * glm::dot(ray.direction(),dist);
@@ -65,26 +75,32 @@ public:
 
 private:
     glm::dvec3 o;
-    double r;    
+    double r;
 };
 
 class Plane: public Surface {
 public:
-    Plane(const glm::dvec3 & normal, const glm::dvec3 & point) {
+    Plane(const glm::dvec3 & normal, const glm::dvec3 & point,
+          const double diffuse, const double specular,
+          const glm::dvec3 & colour ) {
+        
         n = normal;
         p = point;
+        diffuseConst = diffuse;
+        specularConst = specular;
+        colourConst = colour;
     }
 
-    glm::dvec3 normal() const {
+    glm::dvec3 normal() {
         return n;
     }
 
 
-    glm::dvec3 point() const {
+    glm::dvec3 point() {
         return p;
     }
 
-    doubleOption hit(const Ray & ray) const {
+    doubleOption hit( Ray & ray) {
         double denominator = dot(ray.direction(),n);
         double numerator = dot(p - ray.origin(),n);
         // Check possible intersection cases

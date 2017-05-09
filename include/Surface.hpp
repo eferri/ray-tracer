@@ -27,9 +27,23 @@ public:
     }
 };
 
-//Superclass for all shapes. Shapes must implement the hit method.
+// Superclass for all surfaces. Surfaces must implement the hit method.
+// Each surface instance also has a shade method, which uses the given material properties.
 class Surface {
-    virtual doubleOption hit(const Ray & ray) const = 0;
+protected:
+    double diffuseConst;
+    double specularConst;
+    glm::dvec3 colourConst;
+public:
+    double diffuse() {return this->diffuseConst;}
+    double specular() {return this->specularConst;}
+    glm::dvec3 colour() {return this->colourConst;}
+    virtual doubleOption hit(Ray & ray) = 0;
+    virtual glm::dvec3 normal() = 0;
+
+    glm::dvec3 shadeObject(Ray & ray) {
+        return glm::dvec3(0.0,0.0,0.0);
+    }
 };
 
 }
