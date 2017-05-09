@@ -39,10 +39,11 @@ public:
     double specular() {return this->specularConst;}
     glm::dvec3 colour() {return this->colourConst;}
     virtual doubleOption hit(Ray & ray) = 0;
-    virtual glm::dvec3 normal() = 0;
+    // Returns the normalized normal
+    virtual glm::dvec3 normal(glm::dvec3 & point) = 0;
 
     glm::dvec3 shadeObject(Ray & ray) {
-        return glm::dvec3(0.0,0.0,0.0);
+        
     }
 };
 

@@ -37,8 +37,8 @@ public:
         return r;
     }
 
-    glm::dvec3 normal() {
-        return glm::dvec3(0.0,0.0,0.0);
+    glm::dvec3 normal(glm::dvec3 & point) {
+        return glm::normalize(point - o);
     }
 
     doubleOption hit(Ray & ray)  {
@@ -84,14 +84,14 @@ public:
           const double diffuse, const double specular,
           const glm::dvec3 & colour ) {
         
-        n = normal;
+        n = glm::normalize(normal);
         p = point;
         diffuseConst = diffuse;
         specularConst = specular;
         colourConst = colour;
     }
 
-    glm::dvec3 normal() {
+    glm::dvec3 normal(glm::dvec3 & point) {
         return n;
     }
 
