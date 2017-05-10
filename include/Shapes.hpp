@@ -17,13 +17,15 @@ namespace tracer{
 // Represents a sphere.
 class Sphere : public Surface {
 public:
-    Sphere(const glm::dvec3 & origin, const double radius,
-           const glm::dvec3 specular, const glm::dvec3 & colour) {
+    Sphere(const glm::dvec3 & origin, const double & radius,
+           const glm::dvec3 & specular, const glm::dvec3 & colour,
+           const double & reflect) {
         
         o = origin;
         r = radius;
         specularConst = specular;
         colourConst = colour;
+        reflectConst = reflect;        
     }
 
     glm::dvec3 origin() {
@@ -80,12 +82,14 @@ private:
 class Plane: public Surface {
 public:
     Plane(const glm::dvec3 & normal, const glm::dvec3 & point,
-          const glm::dvec3 specular, const glm::dvec3 & colour ) {
+          const glm::dvec3 & specular, const glm::dvec3 & colour,
+          const double & reflect) {
         
         n = glm::normalize(normal);
         p = point;
         specularConst = specular;
         colourConst = colour;
+        reflectConst = reflect;
     }
 
     glm::dvec3 normal(glm::dvec3 & point) {

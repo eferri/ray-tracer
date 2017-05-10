@@ -37,10 +37,12 @@ class Surface {
 protected:
     glm::dvec3 specularConst;
     glm::dvec3 colourConst;
+    double reflectConst;
 public:
     
     glm::dvec3 specular() {return specularConst;}
     glm::dvec3 colour() {return colourConst;}
+    double reflect() {return reflectConst;}    
     virtual HitRecord hit(Ray & ray) = 0;
     // Returns the normalized normal
     virtual glm::dvec3 normal(glm::dvec3 & point) = 0;
