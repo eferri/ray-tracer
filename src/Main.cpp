@@ -83,11 +83,11 @@ glm::dvec3 Render(Ray & ray, Surface **objList, int numObjs) {
     glm::dvec3 intensity = shadeObject(ray, hit, objList, numObjs);
     
     Surface * obj = objList[hit.obj];
-    if (obj->reflect() > 0.0 && glm::length(intensity) > REFLECT_THRESHOLD) {
+    if (obj->reflect() > 0.0) {
         glm::dvec3 rayDir = normalize(ray.direction());
         glm::dvec3 point = ray.pointAt(hit.val);
         glm::dvec3 normal = obj->normal(point);
-        glm::dvec3 reflectDir = rayDir - 2*glm::dot(rayDir,normal)*normal;
+        glm::dvec3 reflectDir = rayDir - 2.0*glm::dot(rayDir,normal)*normal;
         Ray reflectRay(point, reflectDir);
         intensity = intensity + obj->reflect()*Render(reflectRay, objList, numObjs);
     }
