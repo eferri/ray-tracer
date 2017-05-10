@@ -39,8 +39,8 @@ protected:
     glm::dvec3 colourConst;
 public:
     
-    glm::dvec3 specular() {return this->specularConst;}
-    glm::dvec3 colour() {return this->colourConst;}
+    glm::dvec3 specular() {return specularConst;}
+    glm::dvec3 colour() {return colourConst;}
     virtual HitRecord hit(Ray & ray) = 0;
     // Returns the normalized normal
     virtual glm::dvec3 normal(glm::dvec3 & point) = 0;

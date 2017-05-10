@@ -1,5 +1,6 @@
 #include <iostream>
 #include <glm/vec3.hpp>
+#include <cmath>
 
 #include "../include/ImageWriter.hpp"
 #include "../include/Ray.hpp"
@@ -56,8 +57,17 @@ glm::dvec3 shadeObject(Ray & ray, HitRecord hit,
         // only light is ambient. 
         
         if (!lightHit.opt) {
-            light = light + glm::dvec3(LIGHT_INTENSITY) * obj->colour() * 
-                glm::max(0.0, glm::dot(obj->normal(point), glm::normalize(lightRay.direction())));
+            // Lambertian shading
+            glm::dvec3 lightVal(LIGHT_INTENSITY);
+            glm::dvec3 normalRayDirection = glm::normalize(lightRay.direction());
+
+            double ndotL = glm::max(0.0, glm::dot(obj->normal(point), normalRayDirection));
+            light = light + lightVal * obj->colour() * ndotL;
+
+            // Specular (Blinn-Phong shading)
+            glm::dvec3 half = glm::normalize(normalRayDirection - glm::normalize(ray.direction()));
+            light = light + obj->specular() * light * glm::max(0.0, pow(glm::dot(obj->normal(point), half), 70.0));
+
         }
         return light;
 }
@@ -106,7 +116,7 @@ int main() {
     for(int j = 0; j < image.imgHeight(); j++) {
         for (int i = 0; i < image.imgWidth(); i++) {
             
-            for (int k = 0; k < 5; k++) {
+            for (int k = 0; k < 4; k++) {
                 double x = l + screenWidth*(double(i) + 2 * randDouble() * 0.5) / double (image.imgWidth());
                 double y = b + screenHeight*(double(j) + 2 * randDouble() * 0.5) / double (image.imgHeight());
 
@@ -114,7 +124,7 @@ int main() {
                 colour = colour + Render(ray, objList, NUM_SURFACES);
             }
 
-            colour = colour / 5.0;
+            colour = colour / 4.0;
 
             unsigned char r = (unsigned char) 255.9999 * colour.x;
             unsigned char g = (unsigned char) 255.9999 * colour.y;
