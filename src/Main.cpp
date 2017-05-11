@@ -129,12 +129,16 @@ int main() {
     objList[1] = &sphere2;    
     objList[2] = &plane;    
 
+    // Sample pixel in a diamond pattern to anti-alias
+    double aliasx[4] = {1.0,1.5,1.0,0.5};
+    double aliasy[4] = {1.5,1.0,0.5,1.0};
+    
     for(int j = 0; j < image.imgHeight(); j++) {
         for (int i = 0; i < image.imgWidth(); i++) {
             
             for (int k = 0; k < 4; k++) {
-                double x = l + screenWidth*(double(i) + 2 * randDouble() * 0.5) / double (image.imgWidth());
-                double y = b + screenHeight*(double(j) + 2 * randDouble() * 0.5) / double (image.imgHeight());
+                double x = l + screenWidth*(double(i) + aliasx[k]* 0.5) / double (image.imgWidth());
+                double y = b + screenHeight*(double(j) + aliasy[k]* 0.5) / double (image.imgHeight());
 
                 Ray ray(origin, -screenDepth*w + x*u + y*v);
                 colour = colour + Render(ray, objList, NUM_SURFACES);
