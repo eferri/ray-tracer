@@ -46,9 +46,11 @@ glm::dvec3 shadeObject(Ray & ray, HitRecord hit,
         Surface * obj = objList[hit.obj];
         glm::dvec3 light(AMBIENT_INTENSITY);
         light = light*obj->colour(); 
-        
+
+        // Add a random component to the shading to make it look more realistic        
+        light = light + RAND_SCATTER*glm::dvec3(randDouble(), randDouble(), randDouble()); 
+
         glm::dvec3 point = ray.pointAt(hit.val);
-        
         Ray lightRay(point, glm::dvec3(LIGHT_SOURCE) - point);
         
         // Send shadow feeler
@@ -130,7 +132,7 @@ int main() {
     for(int j = 0; j < image.imgHeight(); j++) {
         for (int i = 0; i < image.imgWidth(); i++) {
             
-            for (int k = 0; k < 5; k++) {
+            for (int k = 0; k < 4; k++) {
                 double x = l + screenWidth*(double(i) + 2 * randDouble() * 0.5) / double (image.imgWidth());
                 double y = b + screenHeight*(double(j) + 2 * randDouble() * 0.5) / double (image.imgHeight());
 
@@ -138,7 +140,7 @@ int main() {
                 colour = colour + Render(ray, objList, NUM_SURFACES);
             }
 
-            colour = colour / 5.0;
+            colour = colour / 4.0;
 
             unsigned char r = (unsigned char) 255.9999 * colour.x;
             unsigned char g = (unsigned char) 255.9999 * colour.y;
